@@ -8,6 +8,9 @@ library(phangorn)
 library(CladeDate)
 
 
+# Read ML tree generated with file 2
+MLtree2 <- read.tree(file="MLtree2.tre")
+
 ### Obtain a point estimate of the age of Galloanseres using CladeDate ###
 
 ## Clade A ##
@@ -45,28 +48,32 @@ date.cladeB <- clade.date(ages= Sages, method="StraussSadler", PDFfitting=NULL, 
 
 # Point calibration using the medians
 
+# Identify the calibration node number
+plot(MLtree2, cex=2); nodelabels()
+
+# Point calibration using median values
+
 Calib <- makeChronosCalib(phy = MLtree2,
-node = getMRCA(MLtree2, tip=c("Gallus_gallus_AF143730", "Anser_albifrons_DQ137227"),
+node =c(9, 13),
 age.min = c(date.cladeA$Quantiles[2], date.cladeB$Quantiles[2]) )
 
+# Alternative using tip names to identify nodel number
 
+Calib <- makeChronosCalib(phy = MLtree2,
+node = c(getMRCA(MLtree2, tip=c("Gallus_gallus_AF143730", "Anser_albifrons_DQ137227")),getMRCA(MLtree2, tip=c("Fregata_minor_KT954397", "Sula_sula_KT954398" ))),
+age.min = c(date.cladeA$Quantiles[2], date.cladeB$Quantiles[2]))
+
+
+# Execute Chronos
 Chrono <- chronos(phy = MLtree2, model="discrete", calibration=Calib, control=chronos.control(nb.rate.cat=5))
 
 
 
+# To do:
+
 # Use min-max bound instead
 
-
-
-
-#######################
-### Ploting Results ###
-#######################
-
 # Plot of chronogram and calibration densities.
-
-
-
 
 # Compare point estiamtes and min-max bounds
 
